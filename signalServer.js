@@ -6,6 +6,7 @@ wsServer.on('connection', (stream, req) => {
     //stream.id = req.headers['sec-websocket-key'];
 
     stream.on('message', (data) => {
+        console.log(data + "\n");
         wsServer.clients.forEach(client => {
             if(client !== stream) client.send(data);
         })

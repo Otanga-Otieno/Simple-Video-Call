@@ -21,46 +21,73 @@ function playLocalVideo() {
 const url = "ws://localhost:9005";
 const signallingChannel = new WebSocket(url);
 
-signallingChannel.onmessage = (message) => {
+var localPeerConnection, remotePeerConnection;
+
+const configuration = {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]};
+
+signallingChannel.addEventListener("message", (message) => {
     //message from remote client
     data = JSON.parse(message.data);
     if(data.type === "offer") {
         console.log("Offer received");
-        receiveCall();
+        //receiveCall();
     }
-}
+});
 
+signallingChannel.addEventListener("message", async (message) => {
+    let data = JSON.parse(message.data);
 
-var localPeerConnection, remotePeerConnection;
-const configuration = {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]};
+    if(data.type === "offer") {
+        localPeerConnection, remotePeerConnection = new RTCPeerConnection(configuration);
+        localPeerConnection.setRemoteDescription(new RTCSessionDescription(data));
+        const answer = await localPeerConnection.createAnswer();
+        console.log("Answer created");
+        await localPeerConnection.setLocalDescription(answer);
+        await remotePeerConnection.setRemoteDescription(answer);
+        console.log(answer);
+        signallingChannel.send(JSON.stringify(answer));
+    }
+
+    if(data.type === "answer") {
+        const remoteDesc = new RTCSessionDescription(data);
+        await answerCreated(remoteDesc);
+        console.log("Answer received and set");
+
+    }
+
+});
 
 async function makeCall() {
 
-    const peerConnection = new RTCPeerConnection(configuration);
-
-    signallingChannel.onmessage = async (message) => {
-        if(message.answer) {
-            const remoteDesc = new RTCSessionDescription(message.answer);
-            await peerConnection.setRemoteDescription(remoteDesc);
+    localPeerConnection = new RTCPeerConnection(configuration);
+    localPeerConnection.addEventListener("icecandidate", event => {
+        console.log(event);
+        if(event.candidate) {
+            signallingChannel.send(event.candidate);
         }
-    };
+    });
 
-    const offer = await peerConnection.createOffer();
-    await peerConnection.setLocalDescription(offer);
+    const offer = await localPeerConnection.createOffer();
+    await localPeerConnection.setLocalDescription(offer);
     signallingChannel.send(JSON.stringify(offer));
 
 }
 
 async function receiveCall() {
+    //
+}
 
-    const peerConnection = new RTCPeerConnection(configuration);
-    signallingChannel.onmessage = async (message) => {
-        if(message.offer) {
-            peerConnection.setRemoteDescription(new RTCSessionDescription(message.offer));
-            const answer = await peerConnection.createAnswer();
-            await peerConnection.setLocalDescription(answer);
-            signallingChannel.send({'answer': answer});
-        }
-    }
+async function offerCreated() {
+    
+}
 
+async function answerCreated(description) {
+    remotePeerConnection = new RTCPeerConnection(configuration);
+    remotePeerConnection.setLocalDescription(description);
+    localPeerConnection.setRemoteDescription(description);
+}
+
+function logPeerConnections() {
+    console.log(localPeerConnection);
+    console.log(remotePeerConnection);
 }
