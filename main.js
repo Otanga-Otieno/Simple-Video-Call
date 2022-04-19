@@ -21,38 +21,25 @@ function playLocalVideo() {
 const url = "ws://localhost:9005";
 const signallingChannel = new WebSocket(url);
 
-var localPeerConnection, remotePeerConnection;
+var localPeerConnection;
 
 const configuration = {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]};
-
-signallingChannel.addEventListener("message", (message) => {
-    //message from remote client
-    data = JSON.parse(message.data);
-    if(data.type === "offer") {
-        console.log("Offer received");
-        //receiveCall();
-    }
-});
 
 signallingChannel.addEventListener("message", async (message) => {
     let data = JSON.parse(message.data);
 
     if(data.type === "offer") {
-        localPeerConnection, remotePeerConnection = new RTCPeerConnection(configuration);
-        localPeerConnection.setRemoteDescription(new RTCSessionDescription(data));
+        localPeerConnection = new RTCPeerConnection(configuration);
+        const remoteDesc = new RTCSessionDescription(data);
+        await offerReceived(remoteDesc);
         const answer = await localPeerConnection.createAnswer();
-        console.log("Answer created");
-        await localPeerConnection.setLocalDescription(answer);
-        await remotePeerConnection.setRemoteDescription(answer);
-        console.log(answer);
+        await offerCreated(answer);
         signallingChannel.send(JSON.stringify(answer));
     }
 
     if(data.type === "answer") {
         const remoteDesc = new RTCSessionDescription(data);
-        await answerCreated(remoteDesc);
-        console.log("Answer received and set");
-
+        await offerReceived(remoteDesc);
     }
 
 });
@@ -68,7 +55,7 @@ async function makeCall() {
     });
 
     const offer = await localPeerConnection.createOffer();
-    await localPeerConnection.setLocalDescription(offer);
+    await offerCreated(offer);
     signallingChannel.send(JSON.stringify(offer));
 
 }
@@ -77,17 +64,14 @@ async function receiveCall() {
     //
 }
 
-async function offerCreated() {
-    
+async function offerCreated(description) {
+    localPeerConnection.setLocalDescription(description);
 }
 
-async function answerCreated(description) {
-    remotePeerConnection = new RTCPeerConnection(configuration);
-    remotePeerConnection.setLocalDescription(description);
+async function offerReceived(description) {
     localPeerConnection.setRemoteDescription(description);
 }
 
 function logPeerConnections() {
     console.log(localPeerConnection);
-    console.log(remotePeerConnection);
 }
