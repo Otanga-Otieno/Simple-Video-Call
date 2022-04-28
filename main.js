@@ -9,7 +9,6 @@ async function playLocalVideo() {
     .then(stream => {
         localVideoElement.srcObject = stream;
         return stream;
-        //console.log('Got media stream ' + stream);
     })
     .catch(error => {
         console.error('Error accessing media devices ' + error);
@@ -28,7 +27,6 @@ signallingChannel.addEventListener("message", async (message) => {
     let data = JSON.parse(message.data);
 
     if(data.type === "offer") {
-        localPeerConnection = new RTCPeerConnection(configuration);
         const remoteDesc = new RTCSessionDescription(data);
         await offerReceived(remoteDesc);
         const answer = await localPeerConnection.createAnswer();
@@ -41,9 +39,9 @@ signallingChannel.addEventListener("message", async (message) => {
         await offerReceived(remoteDesc);
     }
 
-    if(data.icecandidate) {
+    if(data.candidate) {
         try {
-            localPeerConnection.addIceCandidate(data.icecandidate);
+            localPeerConnection.addIceCandidate(data);
         } catch (e) {
             console.error("Error adding received icecandidate ", e);
         }
@@ -61,10 +59,15 @@ localPeerConnection.addEventListener("icecandidate", event => {
     }
 });
 
-localPeerConnection.addEventListener("track", (event) => {
-    console.log(event);
+localPeerConnection.addEventListener("connectionstatechange", event => {
+    if(localPeerConnection.connectionState === "connected") {
+        console.log("Peers connected!");
+    }
+})
+
+localPeerConnection.addEventListener("track", event => {
     const [remoteStream] = event.streams;
-    localVideoElement = remoteStream;
+    localVideoElement.srcObject = remoteStream;
 })
 
 async function makeCall() {
