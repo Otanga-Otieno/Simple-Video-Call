@@ -1,6 +1,7 @@
 const WebSocket = require('ws');
 
-const wsServer = WebSocket.Server({port: 9005});
+const wsServer = WebSocket.Server();
+wsServer.listen(9005);
 wsServer.on('connection', (stream, req) => {
 
     stream.on('message', (data) => {
