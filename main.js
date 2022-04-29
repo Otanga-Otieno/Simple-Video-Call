@@ -17,7 +17,7 @@ async function playLocalVideo() {
 }
 
 
-const url = "wss://server.otanga.co.ke:9005";
+const url = "ws://server.otanga.co.ke:9005";
 const signallingChannel = new WebSocket(url);
 
 signallingChannel.addEventListener("message", async (message) => {
