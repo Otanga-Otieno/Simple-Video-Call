@@ -16,8 +16,6 @@ async function playLocalVideo() {
     return localStream;
 }
 
-//playLocalVideo();
-
 
 const url = "ws://localhost:9005";
 const signallingChannel = new WebSocket(url);
@@ -81,10 +79,6 @@ async function makeCall() {
     await offerCreated(offer);
     signallingChannel.send(JSON.stringify(offer));
 
-}
-
-async function receiveCall() {
-    //
 }
 
 async function offerCreated(description) {
