@@ -1,6 +1,14 @@
+var http = require('http');
+var static = require('node-static');
 const WebSocket = require('ws');
 
-const wsServer = WebSocket.Server({port: 9005});
+var file = new static.Server();
+var httpsServer = http.createServer((req, res) => {
+    if(req.url === "/") req.url = "index.htm";
+    file.serve(req, res);
+})
+
+const wsServer = WebSocket.Server({server: httpsServer});
 wsServer.on('connection', (stream, req) => {
 
     stream.on('message', (data) => {
@@ -15,3 +23,5 @@ wsServer.on('connection', (stream, req) => {
     })
 
 })
+
+httpsServer.listen(9005);
