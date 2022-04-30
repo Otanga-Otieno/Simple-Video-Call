@@ -1,9 +1,15 @@
 var https = require('https');
+var fs = require('fs');
 var static = require('node-static');
 const WebSocket = require('ws');
 
+var options = {
+    key: fs.readFileSync("/etc/letsencrypt/live/server.otanga.co.ke/privkey.pem"),
+    cert: fs.readFileSync("/etc/letsencrypt/live/server.otanga.co.ke/fullchain.pem")
+};
+
 var file = new static.Server();
-var httpsServer = https.createServer((req, res) => {
+var httpsServer = https.createServer(options, (req, res) => {
     if(req.url === "/") req.url = "index.htm";
     file.serve(req, res);
 })
