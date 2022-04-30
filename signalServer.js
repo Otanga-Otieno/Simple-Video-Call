@@ -1,9 +1,9 @@
-var http = require('http');
+var https = require('https');
 var static = require('node-static');
 const WebSocket = require('ws');
 
 var file = new static.Server();
-var httpsServer = http.createServer((req, res) => {
+var httpsServer = https.createServer((req, res) => {
     if(req.url === "/") req.url = "index.htm";
     file.serve(req, res);
 })
