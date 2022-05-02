@@ -3,6 +3,7 @@ const constraints = {
     video: true,
 };
 const localVideoElement = document.querySelector("#localVideo");
+const remoteVideoElement = document.querySelector("#remoteVideo");
 
 async function playLocalVideo() {
     let localStream = await navigator.mediaDevices.getUserMedia(constraints)
@@ -71,7 +72,7 @@ localPeerConnection.addEventListener("connectionstatechange", event => {
 localPeerConnection.addEventListener("track", event => {
     console.log(event);
     const [remoteStream] = event.streams;
-    localVideoElement.srcObject = remoteStream;
+    remoteVideoElement.srcObject = remoteStream;
 })
 
 async function makeCall() {
