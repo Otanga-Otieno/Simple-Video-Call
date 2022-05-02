@@ -25,8 +25,13 @@ signallingChannel.addEventListener("message", async (message) => {
     let data = JSON.parse(message.data);
 
     if(data.type === "offer") {
+
         const remoteDesc = new RTCSessionDescription(data);
         await offerReceived(remoteDesc);
+        let stream = await playLocalVideo();
+        await stream.getTracks().forEach(track => {
+            localPeerConnection.addTrack(track, stream);
+        });
         const answer = await localPeerConnection.createAnswer();
         await offerCreated(answer);
         signallingChannel.send(JSON.stringify(answer));
@@ -64,6 +69,7 @@ localPeerConnection.addEventListener("connectionstatechange", event => {
 })
 
 localPeerConnection.addEventListener("track", event => {
+    console.log(event);
     const [remoteStream] = event.streams;
     localVideoElement.srcObject = remoteStream;
 })
