@@ -16,11 +16,14 @@ var httpsServer = https.createServer(options, (req, res) => {
 
 const wsServer = WebSocket.Server({server: httpsServer});
 wsServer.on('connection', (stream, req) => {
+    stream.phrase = req.url;
 
     stream.on('message', (data) => {
-        //console.log(data + "\n");
         wsServer.clients.forEach(client => {
-            if(client !== stream) client.send(data);
+            let phraseWord = stream.phrase;
+            if(client.readyState == WebSocket.OPEN && client.phrase === phraseWord) {
+                if(client !== stream) client.send(data);
+            }
         })
     });
 
