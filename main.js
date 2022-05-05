@@ -18,7 +18,7 @@ async function playLocalVideo() {
 }
 
 
-const url = "wss://server.otanga.co.ke:9005";
+const url = "wss://server.otanga.co.ke:9006" + window.location.pathname;
 const signallingChannel = new WebSocket(url);
 
 signallingChannel.addEventListener("message", async (message) => {
@@ -35,7 +35,7 @@ signallingChannel.addEventListener("message", async (message) => {
         });
         const answer = await localPeerConnection.createAnswer();
         await offerCreated(answer);
-        signallingChannel.send(JSON.stringify(answer));
+        signallingChannel.send(answer);
     }
 
     if(data.type === "answer") {
@@ -59,7 +59,7 @@ var localPeerConnection = new RTCPeerConnection(configuration);
 
 localPeerConnection.addEventListener("icecandidate", event => {
     if(event.candidate) {
-        signallingChannel.send(JSON.stringify(event.candidate));
+        signallingChannel.send(event.candidate);
     }
 });
 
@@ -84,7 +84,7 @@ async function makeCall() {
 
     const offer = await localPeerConnection.createOffer();
     await offerCreated(offer);
-    signallingChannel.send(JSON.stringify(offer));
+    signallingChannel.send(offer);
 
 }
 
