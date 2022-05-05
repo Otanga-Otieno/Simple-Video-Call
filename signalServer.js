@@ -35,7 +35,7 @@ httpsSocketServer.listen(9006);
 wsServer.on('connection', (stream, req) => {
     stream.phrase = req.url.substring(1);
 
-    stream.on('message', (message) => {
+    stream.on('message', (data) => {
         wsServer.clients.forEach(client => {
 
             let phraseWord = stream.phrase;
