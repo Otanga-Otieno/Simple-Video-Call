@@ -23,7 +23,7 @@ const signallingChannel = new WebSocket(url);
 
 signallingChannel.addEventListener("message", async (message) => {
 
-    let data = message;
+    let data = message.data;
     console.log(data);
 
     if(data.type === "offer") {
