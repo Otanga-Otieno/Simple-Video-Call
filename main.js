@@ -35,7 +35,7 @@ signallingChannel.addEventListener("message", async (message) => {
         });
         const answer = await localPeerConnection.createAnswer();
         await offerCreated(answer);
-        signallingChannel.send(answer);
+        signallingChannel.send(JSON.stringify(answer));
     }
 
     if(data.type === "answer") {
@@ -59,7 +59,7 @@ var localPeerConnection = new RTCPeerConnection(configuration);
 
 localPeerConnection.addEventListener("icecandidate", event => {
     if(event.candidate) {
-        signallingChannel.send(event.candidate);
+        signallingChannel.send(JSON.stringify(event.candidate));
     }
 });
 
@@ -84,7 +84,7 @@ async function makeCall() {
 
     const offer = await localPeerConnection.createOffer();
     await offerCreated(offer);
-    signallingChannel.send(offer);
+    signallingChannel.send(JSON.stringify(offer));
 
 }
 
