@@ -36,7 +36,6 @@ wsServer.on('connection', (stream, req) => {
     stream.phrase = req.url.substring(1);
 
     stream.on('message', (message) => {
-        data = message.data;
         wsServer.clients.forEach(client => {
 
             let phraseWord = stream.phrase;
