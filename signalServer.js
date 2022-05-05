@@ -40,7 +40,7 @@ wsServer.on('connection', (stream, req) => {
 
             let phraseWord = stream.phrase;
             if(client.readyState == WebSocket.OPEN && client.phrase === phraseWord) {
-                if(client !== stream) client.send(data.toString());
+                if(client !== stream) client.send(data.toJSON());
             }
 
         })
