@@ -15,7 +15,7 @@ var options = {
 };
 
 var file = new static.Server();
-var httpsServer = https.createServer((req, res) => {
+var httpsServer = https.createServer(options, (req, res) => {
     if(req.url === "/") req.url = "/index.htm";
     let path = req.url.substring(1);
     if ( path !== "favicon.ico" && !isFile(path) ){
