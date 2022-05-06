@@ -4,6 +4,7 @@ const constraints = {
 };
 const localVideoElement = document.querySelector("#localVideo");
 const remoteVideoElement = document.querySelector("#remoteVideo");
+var stream;
 
 async function playLocalVideo() {
     let localStream = await navigator.mediaDevices.getUserMedia(constraints)
@@ -17,7 +18,7 @@ async function playLocalVideo() {
     return localStream;
 }
 async function afterLoad() {
-    var stream = await playLocalVideo();
+    stream = await playLocalVideo();
     remoteVideoElement.srcObject = stream;
 }
 
