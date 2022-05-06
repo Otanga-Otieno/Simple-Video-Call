@@ -16,8 +16,10 @@ async function playLocalVideo() {
     });
     return localStream;
 }
-var stream = playLocalVideo();
-remoteVideoElement.srcObject = stream;
+async function afterLoad() {
+    var stream = await playLocalVideo();
+    remoteVideoElement.srcObject = stream;
+}
 
 const url = "wss://server.otanga.co.ke:9006" + window.location.pathname;
 const signallingChannel = new WebSocket(url);
