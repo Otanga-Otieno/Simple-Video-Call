@@ -16,7 +16,8 @@ async function playLocalVideo() {
     });
     return localStream;
 }
-
+var stream = playLocalVideo();
+remoteVideoElement.srcObject = stream;
 
 const url = "wss://server.otanga.co.ke:9006" + window.location.pathname;
 const signallingChannel = new WebSocket(url);
@@ -30,7 +31,7 @@ signallingChannel.addEventListener("message", async (message) => {
 
         const remoteDesc = new RTCSessionDescription(data);
         await offerReceived(remoteDesc);
-        let stream = await playLocalVideo();
+        //let stream = await playLocalVideo();
         await stream.getTracks().forEach(track => {
             localPeerConnection.addTrack(track, stream);
         });
@@ -78,7 +79,7 @@ localPeerConnection.addEventListener("track", event => {
 
 async function makeCall() {
 
-    let stream = await playLocalVideo();
+    //let stream = await playLocalVideo();
     await stream.getTracks().forEach(track => {
         localPeerConnection.addTrack(track, stream);
     })
