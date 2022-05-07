@@ -4,7 +4,8 @@ const constraints = {
 };
 const localVideoElement = document.querySelector("#localVideo");
 const remoteVideoElement = document.querySelector("#remoteVideo");
-var stream;
+var stream = getLocalStream();
+var remoteStream = null;
 
 async function playLocalVideo() {
     let localStream = await navigator.mediaDevices.getUserMedia(constraints)
@@ -18,9 +19,25 @@ async function playLocalVideo() {
     return localStream;
 }
 async function afterLoad() {
-    stream = await playLocalVideo();
-    localVideoElement.srcObject = stream;
+    localVideoElement.srcObject = await stream;
 }
+
+async function getLocalStream() {
+    let localStream = await playLocalVideo();
+    return localStream;
+}
+
+function switchStream() {
+    if(remoteStream == null) return;
+    let currentStream = localVideoElement.srcObject;
+    if (currentStream == stream) {
+        localVideoElement.srcObject = remoteStream;
+    }
+    if (currentStream == remoteStream) {
+        localVideoElement.srcObject = stream;
+    } 
+}
+
 
 const url = "wss://server.otanga.co.ke:9006" + window.location.pathname;
 const signallingChannel = new WebSocket(url);
@@ -76,7 +93,7 @@ localPeerConnection.addEventListener("connectionstatechange", event => {
 
 localPeerConnection.addEventListener("track", event => {
     console.log(event);
-    const [remoteStream] = event.streams;
+    remoteStream = event.streams;
     localVideoElement.srcObject = remoteStream;
 })
 
