@@ -96,7 +96,7 @@ localPeerConnection.addEventListener("connectionstatechange", event => {
 
 localPeerConnection.addEventListener("track", event => {
     console.log(event);
-    remoteStream = event.streams;
+    [remoteStream] = event.streams;
     localVideoElement.srcObject = remoteStream;
 })
 
