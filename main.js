@@ -4,23 +4,26 @@ const constraints = {
 };
 const localVideoElement = document.querySelector("#localVideo");
 const remoteVideoElement = document.querySelector("#remoteVideo");
-var stream = getLocalStream();
+var stream;
 var remoteStream = null;
 
 async function playLocalVideo() {
-    let localStream = await navigator.mediaDevices.getUserMedia(constraints)
+    let localStream;
+    await navigator.mediaDevices.getUserMedia(constraints)
     .then(stream => {
-        //localVideoElement.srcObject = stream;
-        return stream;
+        localStream = stream;
     })
     .catch(error => {
         console.error('Error accessing media devices ' + error);
     });
     return localStream;
 }
+
 async function afterLoad() {
-    localVideoElement.srcObject = await stream;
+    stream = await getLocalStream();
+    localVideoElement.srcObject = stream;
 }
+afterLoad();
 
 async function getLocalStream() {
     let localStream = await playLocalVideo();
@@ -99,7 +102,6 @@ localPeerConnection.addEventListener("track", event => {
 
 async function makeCall() {
 
-    //let stream = await playLocalVideo();
     await stream.getTracks().forEach(track => {
         localPeerConnection.addTrack(track, stream);
     })
