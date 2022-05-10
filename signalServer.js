@@ -54,3 +54,20 @@ wsServer.on('connection', (stream, req) => {
 });
 
 httpsServer.listen(9005);
+
+/********/
+function createPhrase() {
+    const alphabet = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"];
+    let randInt = Math.floor(Math.random()*26);
+    let randInt2 = Math.floor(Math.random()*26);
+    const phrase = alphabet[randInt] + alphabet[randInt2];
+    return phrase;
+}
+
+function uniquePhrase(server) {
+    let phrase = createPhrase();
+    server.clients.forEach(client => {
+        if(phrase == client.phrase) uniquePhrase(server);
+    })
+    return phrase;
+}
