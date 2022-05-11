@@ -8,7 +8,17 @@
     </head>
 
     <body style="text-align: center;">
-        <div><button>Start instant video call</button></div>
+        <div><button id="startcall">Start instant video call</button></div>
     </body>
 
 </html>
+
+<script>
+    function getPhrase() {
+    fetch("/phrase").then(response => {
+        return response.text();
+    }).then(data => console.log(data));
+    }
+
+    document.querySelector("#startcall").addEventListener("click", getPhrase);
+</script>
