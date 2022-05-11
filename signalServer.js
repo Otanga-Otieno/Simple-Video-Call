@@ -14,23 +14,29 @@ var options = {
     cert: fs.readFileSync("/etc/letsencrypt/live/server.otanga.co.ke/fullchain.pem")
 };
 
-var file = new static.Server();
-var httpsServer = https.createServer(options, (req, res) => {
-    if(req.url === "/") req.url = "/index.htm";
-    let path = req.url.substring(1);
-    if ( path !== "favicon.ico" && !isFile(path) ){
-        req.url = "index.htm";
-    }
-
-    file.serve(req, res);
-})
-
 var httpsSocketServer = https.createServer(options, (req, res) => {
     //do nothing
 });
 
 const wsServer = new WebSocket.Server({server: httpsSocketServer});
 httpsSocketServer.listen(9006);
+
+var file = new static.Server();
+var httpsServer = https.createServer(options, (req, res) => {
+    if(req.url === "/") req.url = "/index.htm";
+    if(req.url == "/phrase") {
+        let phrase = uniquePhrase(wsServer);
+        res.setHeader("content-type", "text/plain");
+        res.write(phrase);
+        res.end();
+    } else {
+        let path = req.url.substring(1);
+        if ( path !== "favicon.ico" && !isFile(path) ){
+            req.url = "index.htm";
+        }
+        file.serve(req, res);
+    }
+})
 
 wsServer.on('connection', (stream, req) => {
     stream.phrase = req.url.substring(1);
