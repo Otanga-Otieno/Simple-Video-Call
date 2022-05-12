@@ -13,18 +13,37 @@
           </style>
     </head>
     
-    <body style="text-align: center;">
+    <body style="text-align: center;" onload="getLink();">
         <h1>Simple Video Call</h1>
 
         <div>
             <video id="localVideo" autoplay playsinline muted></video>
-            <video id="remoteVideo" autoplay playsinline muted></video>
         </div>
-        <button onclick="makeCall();">Start</button><br>
-        <button onclick="switchStream();">Switch</button>
+
+        <div>
+            <button onclick="makeCall();">Start</button><br>
+            <button onclick="switchStream();">Switch</button>
+        </div>
+
+        <div style="margin: 1%;">
+            <div>Call link: </div>
+            <div id="linkdiv" style="display: inline; border: solid 1px black;" ></div>
+            <button style="display: inline;" onclick="copyLink();">Copy</button>
+        </div>
+
     </body>
 </html>
 
 <!--<script src="/socket.io/socket.io.js"></script>-->
 <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
 <script src="main.js"></script>
+<script>
+    function getLink() {
+        document.querySelector("#linkdiv").innerHTML = window.location.href;
+    }
+
+    function copyLink() {
+        let link = window.location.href;
+        navigator.clipboard.writeText(link);
+    }
+</script>
