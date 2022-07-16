@@ -1,6 +1,7 @@
 const constraints = {
     audio: false,
     video: true,
+    height: 480
 };
 const localVideoElement = document.querySelector("#localVideo");
 const remoteVideoElement = document.querySelector("#remoteVideo");
