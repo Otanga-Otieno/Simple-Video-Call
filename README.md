@@ -9,3 +9,6 @@ Copy and share the video link with the intended recepient. Either user can click
 
 ![Alt text](https://otanga.co.ke/project-screenshots/videocall/videocallss2.png "Video Call")
 <br/><br/><br/>
+
+This application currently supports video alone (no audio). Further improvements will be made.
+<br/><br/><br/>
